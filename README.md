@@ -13,14 +13,32 @@ Check our RESOURCES.md for some links we think you'll find handy.
 
 ## Homework Checklist
 
-- [ ] [Fork this repository][gh-fork]
-- [ ] Clone the repo to your own machine
-- [ ] Use the virtualenv you created in previous lesson
-- [ ] Make sure timetracker entries are only accessible by the user that created it
-- [ ] Make sure clients and projects can only be changed by their creator
+- [x] [Fork this repository][gh-fork]
+- [x] Clone the repo to your own machine
+- [x] Use the virtualenv you created in previous lesson
+- [x] Make sure timetracker entries are only accessible by the user that created it
+- [x] Make sure clients and projects can only be changed by their creator
 - [ ] Deploy your application to Heroku and email a link to [Brenton](brenton@commoncode.com.au).
 - [ ] Bonus: On the project list view, show how much time was spent per project in total and how much time the current user spent
+ --add two info
+ a. total time spent per project
+project_data = {}
+for entry in all entries:
+    # get the time now if the stop is blank, this will give us a rough estimate
+    if entry.stop is "":
+        entry.stop = timezone.now()
+    time_elapsed = entry.stop - entry.start
+    if project_data[entry.project] is None:
+        project_data[entry.project] = time_elapsed
+    else:
+        project_data[entry.project] += time_elapsed
 
+ b. total time spent by user in project
+# query all entry objects made by active user
+
+we will use the same function above to calculate the time spent per project
+
+ 
 We're hoping to organise a **prize** for people that have made it this far. We're asking you to email Brenton so that we have some contact details for you.
 
 When you've completed some or all of the homework please make a [Pull Request][gh-pr] against this repository. If you submit your work before Wednesday evening we'll give you feedback before the next class.
