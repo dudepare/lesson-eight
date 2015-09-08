@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import CreateView, RedirectView, UpdateView
+from django.shortcuts import redirect
+from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
 from .forms import ClientForm, EntryForm, ProjectForm
 from .models import Client, Entry, Project
 
@@ -77,7 +76,6 @@ class EntryCreateView(LoginRequiredMixin, OwnerDataMixin, FormAuthorMixin, Creat
 
     def get_context_data(self, **kwargs):
         context = super(EntryCreateView, self).get_context_data(**kwargs)
-        context['form'].fields['project'].queryset = Project.objects.filter(author=self.request.user)
         context['entry_list'] = self.get_queryset()
         return context
 
@@ -91,10 +89,33 @@ class ProjectCreateView(LoginRequiredMixin, OwnerDataMixin, FormAuthorMixin, Cre
     success_url = reverse_lazy('project-list')
     template_name = 'projects.html'
 
+    def time_spent(self, entrylist):
+        summary = {}
+        for entry in entrylist:
+            project_name = entry.project.name
+            if project_name in summary.keys():
+                summary[project_name] += entry.duration
+            else:
+                summary[project_name] = entry.duration
+        return summary
+
     def get_context_data(self, **kwargs):
         context = super(ProjectCreateView, self).get_context_data(**kwargs)
-        context['form'].fields['client'].queryset = Client.objects.filter(author=self.request.user)
-        context['project_list'] = self.get_queryset()
+        project_totals = self.time_spent(Entry.objects.all())
+        user_totals = self.time_spent(Entry.objects.filter(author=self.request.user))
+        project_list = self.get_queryset()
+        for p in project_list:
+            if p.name in project_totals.keys():
+                p.total_time = project_totals[p.name]
+            else:
+                p.total_time = 0.0
+
+            if p.name in user_totals.keys():
+                p.user_total = user_totals[p.name]
+            else:
+                p.user_total = 0.0
+
+        context['project_list'] = project_list
         return context
 
 
@@ -109,8 +130,8 @@ class ProjectUpdateView(LoginRequiredMixin, OwnerDataMixin, FormAuthorMixin, Upd
 
     def get_context_data(self, **kwargs):
         context = super(ProjectUpdateView, self).get_context_data(**kwargs)
-        context['form'].fields['client'].queryset = Client.objects.filter(author=self.request.user)
         return context
+
 
 def clientRedirectView(request):
     if request.user.is_authenticated():

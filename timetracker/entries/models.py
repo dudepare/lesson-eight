@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+import datetime
 
 
 class Client(models.Model):
@@ -38,3 +39,14 @@ class Entry(models.Model):
 
     def is_finished(self):
         return self.stop is not None
+
+    @property
+    def duration(self):
+        # assume now for calculating duration
+        # if stop is not available
+        stop_val = self.stop
+        if stop_val is None:
+            stop_val = timezone.now()
+
+        elapsed_time = stop_val - self.start
+        return (elapsed_time.total_seconds()//datetime.timedelta(minutes=1).total_seconds())
