@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'AndrewArtajos')
 DEBUG = os.environ.get('DJANGO_DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['gentle-sands-9615.herokuapp.com']
+ALLOWED_HOSTS = ['arcane-headland-1540.herokuapp.com']
 
 
 # Application definition
