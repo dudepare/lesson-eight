@@ -1,3 +1,3 @@
 # Procfile
 
-web: gunicorn --chdir timetracker timetracker.wsgi --log-file ERRORLOG
+web: gunicorn timetracker.wsgi --log-file ERRORLOG
